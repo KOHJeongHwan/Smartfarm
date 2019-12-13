@@ -1,0 +1,360 @@
+<!--%import("js/dfs_xy_conv.js")-->
+<!--%import("js/jquery.vticker.min.js")-->
+<!--@if($widget_info->show_fcst == '1')-->
+	<!--%import("js/Chart.bundle.min.js")-->
+	<!--%import("js/utils.js")-->
+<!--@end-->
+<!--%import("css/default.css")-->
+<!--@if($widget_info->colorset == 'dark')-->
+	<!--%import("css/dark.css")-->
+<!--@end-->
+
+<div class="widget_pr_weather">
+<!--@if($widget_info->is_act)-->
+	<div class="pr_dsp_weather">
+		<div id="pr_select_geo" class="pr_btn_geo {$widget_info->isgeo}"></div>
+		<div id="pr_weather_html">
+			<div class="cont_today">
+				<div class="info_temp">
+				<!--@if($widget_info->data->weather->time)-->
+					<p class="txt_desc" data-msg="지역 변경" data-loc="{$widget_info->address.', '.$widget_info->data->weather->time.' 현재'}">{$widget_info->address.', '.$widget_info->data->weather->time.' 현재'}</p>
+				<!--@else-->
+					<p class="txt_desc" data-msg="지역 변경" data-loc="&nbsp;<span class='w_loader'></span>">&nbsp;<span class="w_loader"></span></p>
+				<!--@end-->
+					<div class="info_weather">
+						<span class="wrap_desc">
+							<span id="ico_wl" class="ico_wl {$widget_info->data->weather->class}"></span>
+							<span class="desc_temp">
+								<span class="txt_weather">{$widget_info->data->weather->txt}</span>
+								<strong class="txt_temp">{$widget_info->data->weather->temp}<span class="txt_unit">℃</span></strong>
+							</span>
+						</span>
+
+						<ul class="list_tommorrow">
+							<li loop="$widget_info->data->forecast=> $key, $val">
+								<span class="ico_wl ico_ws {$val->class}" alt="{$val->txt}"></span>
+								<span class="txt_temper">{$val->temp}</span>
+								<span class="txt_ampm">{$val->time}</span>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="info_another">
+					<ul> 
+						<li>
+							<span class="txt_tit">현재바람<span class="wind">{$widget_info->data->weather->wind}</span></span>
+							<span class="txt_tit">현재습도<span class="humidity">{$widget_info->data->weather->humidity}</span></span>
+						</li> 
+						
+						<li>
+							<span class="txt_tit">통합대기<span class="dust" style="color:{$widget_info->data->aqi->bgcolor};">{$widget_info->data->aqi->level}</span></span>
+						</li> 
+						 
+						<li>
+							<span class="txt_tit">미세먼지<span class="dust10" style="color:{$widget_info->data->aqi->pm10_color};">{$widget_info->data->aqi->pm10} ㎍/㎥</span></span>
+							<span class="txt_tit">초미세먼지<span class="dust25" style="color:{$widget_info->data->aqi->pm25_color};">{$widget_info->data->aqi->pm25} ㎍/㎥</span></span>
+						</li> 
+					</ul>
+				</div> 
+			</div>
+		</div>
+		<div class="data_provide">제공 : <a href="{$widget_info->kmaurl}" target="_blank">기상청 날씨누리</a></div>
+	</div>
+
+	<div class="pr_select_region" style="display:none;">
+		<div class="pr_select_control">
+			<i id="pr_select_pre" class="fa fa-arrow-left" aria-hidden="true"></i>
+			<span style="width:100%;">&nbsp;</span>
+			<i id="pr_select_close" class="fa fa-times" aria-hidden="true"></i>
+		</div>
+
+		<ul id="pr_region_list">
+			<!--주소록 출력 위치-->
+		</ul>
+		<div class="pr_spinner" style="display:none;">
+		  <div class="bounce1"></div>
+		  <div class="bounce2"></div>
+		  <div class="bounce3"></div>
+		</div>
+	</div>
+
+<!--@if($widget_info->show_fcst == '1')-->
+	<!--단기 예보 표시-->
+	<div class="pr_fcst_weather">
+		<div class="fcst_table">
+			<div class="fcst_title">
+				<ul>
+					<li class="h_date"><span>날짜</span></li>
+					<li class="h_time"><span>시간</span></li>
+					<li class="h_weather"><span>날씨</span></li>
+					<li class="h_temp"><span>기온<br><em>(°C)</em></span></li>
+					<li class="h_rain"><span>강수<br>확률<br><em>(%)</em></span></li>
+					<li class="h_wind"><span>바람<br><em>(m/s)</em></span></li>
+					<li class="h_humid"><span>습도<br><em>(%)</em></span></li>
+				</ul>
+			</div>
+			<div class="fcst_container">
+			<?php
+				$date = array(0=>'오늘', 1=>'내일', 2=>'모레');
+				$fcst = $__Context->widget_info->data->short_fcst;
+				for($i=0; $i<15; $i++)
+				{
+					$close_div = '';
+					$open_div = '<ul class="forecast_lst">';
+					if(0 == $i || 00 == $fcst[$i]->time)
+						echo '<div class="info_area"><strong class="h_date tit">'.$date[($fcst[$i]->fcstDate-date('Ymd'))].'</strong>';
+
+					if(14 == $i || 21 == $fcst[$i]->time)
+					{
+						$close_div = '</div>';
+						$open_div = '<ul class="forecast_lst last">';
+					}
+
+					echo $open_div.'<li class="h_time tit"><span>'.$fcst[$i]->time.'</span><span class="blind"></span></li>';
+					echo '<li class="h_weather"><span class="ico_wl ico_ws '.$fcst[$i]->class.'" alt="'.$fcst[$i]->txt.'"></span></li>';
+					echo '<li class="h_temp"><span class="blind"></span></li>';
+					echo '<li class="h_rain"><div class="graph_bar"><em style="height: '.$fcst[$i]->pop.'%"><span>'.$fcst[$i]->pop.'</span></em></div></li>';
+					echo '<li class="h_wind"><img src="css/'.$fcst[$i]->wind_class.'.png"/><em class="txt">'.$fcst[$i]->wind_speed.'</em></li>';
+					echo '<li class="h_humid"><div class="graph_bar"><em style="height: '.$fcst[$i]->humidity.'%"><span>'.$fcst[$i]->humidity.'</span></em></div></li></ul>'.$close_div;
+				} 
+			?>
+			</div>
+			<div class="chart-container">
+				<canvas id="canvas"></canvas>
+			</div>
+		</div>
+	</div>
+<script>
+window.onload = function() {
+	var data_str = {$widget_info->data->short_fcst_temp};
+	var label_str = ['', '', '', '', '', '', '', '', '', '', '', '', '', '', ''];
+
+	var chart = new Chart(document.getElementById('canvas').getContext('2d'), {
+		type: 'line',
+		data: {
+			labels: label_str,
+			datasets: [{
+				label: '기온',
+				data: data_str,
+				fill: false,
+				backgroundColor: window.chartColors.blue,
+				borderColor: window.chartColors.blue,
+				borderWidth: 1,
+				lineTension: 0.1
+			}]
+		},
+		options: {
+			maintainAspectRatio: false,
+			legend: { display: false },
+			scales: {
+				xAxes: [{ 
+					display: false,
+				}],
+				yAxes: [{ 
+					display: false,
+				}],
+			},
+			layout: {
+				padding: {
+					left: 10,
+					right: 10,
+					top: 15,
+					bottom: 5
+				}
+			}
+		}
+	});
+
+	Chart.plugins.register({
+		afterDatasetsDraw: function(chart) {
+			var ctx = chart.ctx;
+			chart.data.datasets.forEach(function(dataset, i) {
+				var meta = chart.getDatasetMeta(i);
+				if (!meta.hidden) {
+					meta.data.forEach(function(element, index) {
+						ctx.fillStyle = 'rgb(0, 0, 0)';
+
+						var fontSize = 11;
+						var fontStyle = 'normal';
+						var fontFamily = 'Helvetica Neue';
+						ctx.font = Chart.helpers.fontString(fontSize, fontStyle, fontFamily);
+
+						var dataString = dataset.data[index].toString();
+
+						ctx.textAlign = 'center';
+						ctx.textBaseline = 'middle';
+
+						var padding = 5;
+						var position = element.tooltipPosition();
+						ctx.fillText(dataString, position.x, position.y - (fontSize / 2) - padding);
+					});
+				}
+			});
+		}
+	});
+}
+</script>
+<!--@end-->
+
+<script>
+jQuery(document).ready(function($) {
+
+	$('.info_another').vTicker('init', {
+		speed:500,
+		pause:3500,
+		padding:5,
+		mousePause:false
+	});
+
+	$('#pr_select_geo').on('click', function() {
+		$(this).addClass('act');
+
+		var geoSuccess = function(position) {
+			getWeather(JSON.stringify(dfs_xy_conv('toXY', position.coords.latitude, position.coords.longitude)));
+		};
+		var geoError = function(error) {
+			$('#pr_select_geo').removeClass('act');
+			selLocation();
+		};
+
+		if(navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {timeout: 5000});
+		} else {
+			$('#pr_select_geo').removeClass('act');
+			selLocation();
+		};
+	});
+
+	$('.txt_desc').on('mouseenter mouseleave click', function(e) {
+		if (e.type === 'mouseenter') {
+			$(this).html($(this).data('msg')).css('color', '#0092ff');
+		}
+		else if (e.type === 'mouseleave') {
+			$(this).html($(this).data('loc')).css('color', '');
+		}
+		else {
+			selLocation();
+		}
+	});
+
+	$('#pr_select_close').on('click', function() {
+		$('.pr_select_region').hide();
+		$('.pr_dsp_weather').fadeIn(1500);
+	});
+
+	$('#pr_select_pre').on('click', function() {
+		var rgncd = $(this).data('rgncd').toString();
+		getWeather(rgncd);
+		if(rgncd.length == 1) {
+			$('#pr_select_pre').hide();
+		} else if(rgncd.length == 2) {
+			$(this).data('rgncd', '0');
+		}
+	});
+
+	$('#pr_region_list').on('click', '.pr_rgn_item', function() {
+		var rgncd = $(this).data('rgncd').toString();
+		
+		if(rgncd.length == 2) {
+			$('#pr_select_pre').data('rgncd', '0');
+		} else if(rgncd.length == 5) {
+			$('#pr_select_pre').data('rgncd', rgncd.substring(0, 2));
+		} else if(rgncd.length == 8) {
+			$('#pr_select_pre').data('rgncd', rgncd.substring(0, 5));
+		}
+
+		$('#pr_select_pre').show();
+		getWeather(rgncd);
+	});
+
+	var selLocation = function() {
+		$('.pr_dsp_weather').hide();
+		$('#pr_select_pre').hide();
+		$('.pr_select_region').fadeIn('slow');
+		getWeather('0');
+	};
+
+	function getWeather(rgncd) {
+		$.ajax({
+			url: './widgets/pr_weather_v2/getWeather.php',
+			global: false,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				loc: rgncd
+			},
+			beforeSend: function() {
+				$('.pr_spinner').show();
+			},
+			success: function(result) {
+				$('.pr_spinner').hide();
+				
+				if(result && result.success) {
+					if(result.type == 'list') {
+						var rgnList = new Map();
+						var arrayObj = result.data.split('|');
+						arrayObj.forEach(function(obj) {
+							var arrayStr = obj.split(':');
+							rgnList.set(arrayStr[0], arrayStr[1]);
+						});
+						var html = '';
+						rgnList.forEach(function(val, idx) {
+							html += '<li class="pr_rgn_item" data-rgncd="'+idx+'">'+val+'</li>';
+						});
+						$('#pr_region_list').html(html);
+					} else if(result.type == 'html') {
+
+						if(result.isgeo) {
+							$('#pr_select_geo').removeClass('act').addClass('on');
+						} 
+						else {
+							$('#pr_select_geo').removeClass('on');
+						};
+
+						//날씨
+						$('#ico_wl').removeClass().addClass('ico_wl').addClass(result.data.weather.class);
+						$('.txt_weather').html(result.data.weather.txt);
+						$('.txt_temp').html(result.data.weather.temp+'<span class="txt_unit">℃</span>');
+						$('.txt_desc').html(result.region+', '+result.data.weather.time+' 현재').data('loc', result.region+', '+result.data.weather.time+' 현재');
+						//하단
+						$('.humidity').html(result.data.weather.humidity);
+						$('.wind').html(result.data.weather.wind);
+						$('.dust').html(result.data.aqi.level).css('color', result.data.aqi.bgcolor);
+						$('.dust10').html(result.data.aqi.pm10+' ㎍/㎥').css('color', result.data.aqi.pm10_color);
+						$('.dust25').html(result.data.aqi.pm25+' ㎍/㎥').css('color', result.data.aqi.pm25_color);
+						//예보
+						var tommorrow = '';
+						$.each(result.data.forecast, function(key, val) {
+							tommorrow += '<li><span class="ico_wl ico_ws '+val.class+'"></span><span class="txt_temper">'+val.temp+'</span><span class="txt_ampm">'+val.time+'</span></li>';
+						});
+						$('.list_tommorrow').html(tommorrow);
+
+						$('.pr_select_region').hide();
+						$('.pr_dsp_weather').fadeIn(1500);
+						$('#pr_select_pre').data('rgncd', '0');
+					}
+				}
+				else {
+					$('#pr_select_geo').removeClass('act');
+					$('.txt_desc').html(result.emsg).data('loc', result.emsg);
+				}
+			},
+			error: function(result) {
+				$('#pr_select_geo').removeClass('act');
+				console.log(result.responseText);
+			},
+		});
+	}
+
+<!--@if($widget_info->trace)-->
+	$('#pr_select_geo').trigger('click');
+<!--@elseif($widget_info->req_load)-->
+	getWeather('Load');
+<!--@end-->
+
+});
+
+</script>
+<!--@end-->
+
+</div>

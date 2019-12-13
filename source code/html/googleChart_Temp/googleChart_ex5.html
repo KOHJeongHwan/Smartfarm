@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head lang='en'>
+		<meta charset="UTF-8">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+		<script type="text/javascript">
+			
+			google.load("visualization", "1", {packages:["corechart"]});
+ 			google.charts.setOnLoadCallback(loadChart);
+   
+   			function loadChart(){
+  				$.ajax({
+  					url:'http://15.164.96.119/ex2.php',
+  					type: 'POST',
+  					data: {getChart:true},
+  					dataType: 'json',
+  					success: function(chartValue){
+  						//console.log(chartValue);
+  						drawChart(chartValue); 
+  					}
+  				});
+   			}
+
+			function drawChart(chartValue) {
+				var data = google.visualization.arrayToDataTable(chartValue);
+		 	 	var options = {
+		 	 		title: "2019-08-13", 
+			 		width: 900, 
+			 		height: 450, 
+					curveType: 'function',
+                                        legend: { position: 'bottom'}
+				};
+
+	          		var chart = new google.visualization.LineChart(document.getElementById('line_chart'));
+
+	          		chart.draw(data, options);
+	       		}
+
+		</script>
+		<title>	HAVE A GOOD FARM </title>
+	</head>
+	<body>
+		<div id='line_chart'></div>
+	</body>
+</html>

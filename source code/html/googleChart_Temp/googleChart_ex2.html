@@ -1,0 +1,38 @@
+<html>
+	<head> 
+		<meta charset="utf-8">
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		<script type="text/javascript">
+			
+			google.load("visualization", "1", {packages:["corechart"]});
+			google.setOnLoadCallback(drawChart);
+
+			function drawChart() {
+	              		var data = google.visualization.arrayToDataTable([
+			                ['Time', '이산화탄소','조도','토양습도', '습도','온도'],
+			                ['1',  40,	400,	700,	80,	18],
+			                ['2',  40,	520,	640,	70,	20],
+			                ['3',  40,	470,	670,	60,	22],
+			                ['4',  40,	440,	640,	50,	24]
+				]);
+
+	       			var options = {
+			                title: 'Have a good farm',
+					vAxis: {title:'값'}, 
+					hAxis: {title:'시간'},
+					curveType: 'function',
+					legend: { position: 'bottom'}
+			              };
+
+
+				var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+				chart.draw(data, options);
+	            }
+		</script>
+	</head>
+	
+	<body>
+
+		<div id="chart_div" style="width: 900px; height: 500px;"></div>
+	</body>
+</html>

@@ -1,0 +1,593 @@
+@charset "utf-8";
+
+.widget_pr_weather {
+	position: relative;
+	font-size: 12px;
+	color: #333;
+	background-color: #fff;
+}
+
+.pr_select_control {
+	font-size: 1.3em;
+	color: #aaa;
+	display: flex;
+	padding: 2px 5px 0 5px;
+	background: #eef2f7;
+}
+
+.pr_select_control .pr_rgn_name {
+	width: 100%;
+    text-align: left;
+    font-size: 0.8em;
+	color: #666;
+	padding-top: 0.2em;
+	overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#pr_select_pre, #pr_select_close, #pr_select_geo {
+	cursor: pointer;
+	padding: 3px;
+}
+
+#pr_select_pre:hover, #pr_select_close:hover {
+	color: #333;
+}
+
+#pr_select_geo {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0;
+}
+
+#pr_select_open:hover {
+	color: #ff704a;
+}
+
+#pr_select_geo.pr_btn_geo {
+	display: block;
+    background: url(ico_btn.png) no-repeat 0 0;
+	width: 27px;
+    height: 27px;
+	-webkit-animation-name: none;
+	-moz-animation-name: none;
+	-o-animation-name: none;
+	-ms-animation-name: none;
+}
+
+#pr_select_geo.off {
+    background-position: 0px 0px;
+}
+
+#pr_select_geo.on {
+    background-position: -28px 0px;
+}
+
+#pr_select_geo.act {
+	background-position: -56px 0px;
+	-webkit-animation-name: rotate;
+	-webkit-animation-duration:1.5s;
+	-webkit-animation-iteration-count:infinite;
+	-webkit-animation-timing-function:linear;
+	-moz-animation-name: rotate;
+	-moz-animation-duration:1.5s;
+	-moz-animation-iteration-count:infinite;
+	-moz-animation-timing-function:linear;
+	-o-animation-name: rotate;
+	-o-animation-duration:1.5s;
+	-o-animation-iteration-count:infinite;
+	-o-animation-timing-function:linear;
+	-ms-animation-name: rotate;
+	-ms-animation-duration:1.5s;
+	-ms-animation-iteration-count:infinite;
+	-ms-animation-timing-function:linear;
+}
+
+@-webkit-keyframes rotate {
+	from {-webkit-transform:rotate(0deg);}
+	to {  -webkit-transform:rotate(360deg);}
+}
+
+@-moz-keyframes rotate {
+	from {-moz-transform:rotate(0deg);}
+	to {  -moz-transform:rotate(360deg);}
+}
+
+@-o-keyframes rotate {
+	from {-o-transform:rotate(0deg);}
+	to {  -o-transform:rotate(360deg);}
+}
+
+@-ms-keyframes rotate {
+	from {-ms-transform:rotate(0deg);}
+	to {  -ms-transform:rotate(360deg);}
+}
+
+#pr_weather_html {
+	min-height: 37px;
+	padding: 5px;
+}
+
+.data_provide {
+	font-size:10px;
+	text-align:right;
+	padding:0 5px 2px 0;
+	margin-top: -5px;
+}
+.data_provide a {
+	text-decoration: none;
+	color: #333;
+}
+
+#pr_region_list {
+    padding: 5px 0 0 5px;
+	list-style: none;
+    margin: 0;
+	box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+	overflow-y: auto;
+    max-height: 284px;
+}
+
+#pr_region_list li {
+	border: 1px solid #d5dcde;
+    display: inline-flex;
+	border-radius: 5px;
+	margin-bottom: 5px;
+	margin-right: 3px;
+	padding: 3px 5px;
+	color: #333;
+	max-width: 90%;
+	cursor: pointer;
+}
+
+#pr_region_list li:hover {
+    background-color: #e9eded;
+	color: #000;
+}
+
+#pr_region_list::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+	background-color: #F5F5F5;
+	border-radius: 2px;
+}
+
+#pr_region_list::-webkit-scrollbar {
+	width: 4px;
+	background-color: #F5F5F5;
+}
+
+#pr_region_list::-webkit-scrollbar-thumb {
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 2px;
+}
+
+
+.pr_spinner {
+  margin: 0 auto;
+  text-align: center;
+}
+
+.pr_spinner > div {
+  margin-bottom: 1px;
+  width: 8px;
+  height: 8px;
+  background-color: #bbb;
+
+  border-radius: 50%;
+  display: inline-block;
+  -webkit-animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+  animation: sk-bouncedelay 1.4s infinite ease-in-out both;
+}
+
+.pr_spinner .bounce1 {
+  -webkit-animation-delay: -0.32s;
+  animation-delay: -0.32s;
+}
+
+.pr_spinner .bounce2 {
+  -webkit-animation-delay: -0.16s;
+  animation-delay: -0.16s;
+}
+
+@-webkit-keyframes sk-bouncedelay {
+  0%, 80%, 100% { -webkit-transform: scale(0) }
+  40% { -webkit-transform: scale(1.0) }
+}
+
+@keyframes sk-bouncedelay {
+  0%, 80%, 100% { 
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  } 40% { 
+    -webkit-transform: scale(1.0);
+    transform: scale(1.0);
+  }
+}
+
+#pr_weather_html .list_tommorrow {
+	float: right;
+    list-style: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+    height: 48px;
+    max-width: 52%;
+    overflow: hidden;
+}
+
+#pr_weather_html .list_tommorrow li {
+    float: left;
+    width: 75px;
+    text-align: center;
+	list-style: none;
+}
+
+#pr_weather_html .list_tommorrow .txt_ampm {
+    display: block;
+    margin-top: 2px;
+    font-size: 13px;
+    color: #555;
+    line-height: 1.17;
+}
+
+#pr_weather_html .list_tommorrow .txt_temper {
+    display: inline-block;
+    font-size: 18px;
+    vertical-align: top;
+	font-family: tahoma, sans-serif;
+	line-height: 26px;
+}
+
+
+
+#pr_weather_html .info_weather {
+    margin-right: 25px;
+}
+
+#pr_weather_html .wrap_desc {
+    display: inline-block;
+}
+
+#pr_weather_html .info_temp .desc_temp {
+    display: inline-block;
+    padding-left: 5px;
+    text-align: left;
+	max-width: 60%;
+}
+
+#pr_weather_html .txt_weather {
+	margin-top: 5px;
+    display: block;
+    white-space: nowrap;
+}
+
+#pr_weather_html .txt_temp {
+    display: inline-block;
+    overflow: hidden;
+    font-size: 34px;
+	line-height: 1;
+    font-family: tahoma, sans-serif;
+}
+
+#pr_weather_html .txt_temp .txt_unit {
+    vertical-align: 10px;
+    font-size: 22px;
+	padding-left: 2px;
+}
+
+#pr_weather_html .txt_desc {
+    text-align: left;
+    line-height: 15px;
+	margin: 0 0 3px 2px;
+	padding: 0;
+    font-size: 13px;
+	word-break: keep-all;
+	cursor: pointer;
+	margin-right: 50px;
+}
+
+#pr_weather_html .info_another {
+	border-top: 1px solid #f2f2f2;
+	font-size: 14px;
+	width: 100%;
+}
+
+#pr_weather_html .info_another .wind,
+#pr_weather_html .info_another .humidity,
+#pr_weather_html .info_another .dust,
+#pr_weather_html .info_another .dust10,
+#pr_weather_html .info_another .dust25
+{
+    padding-left: 10px;
+	color: #3890fc;
+}
+
+#pr_weather_html .info_another ul {
+    width: 100%;
+}
+
+#pr_weather_html .info_another ul li {
+    display: flex;
+}
+
+#pr_weather_html .info_another .txt_tit {
+    width: 50%;
+}
+
+#pr_weather_html .ico_wl {
+	float: left;
+    display: block;
+    overflow: hidden;
+    width: 58px;
+    height: 58px;
+    background: url(ico_weather_l.png) no-repeat 0 0;
+    text-indent: -9999px;
+}
+#pr_weather_html .ico_ws, .fcst_table .ico_ws {
+    width: 26px;
+    height: 26px;
+    background: url(ico_weather_26.png) no-repeat 0 0;
+	display: inline-block;
+	float: none;
+}
+/* 맑음 */
+#pr_weather_html .ico_wl.DB01, .fcst_table .ico_wl.DB01 {
+    background-position: 0 0
+}
+/* 맑음 밤 */
+#pr_weather_html .ico_wl.DB01_N, .fcst_table .ico_wl.DB01_N {
+    background-position: 0 -60px
+}
+/* 구름조금 */
+#pr_weather_html .ico_wl.DB02, .fcst_table .ico_wl.DB02 {
+    background-position: 0 -120px
+}
+/* 구름조금 밤 */
+#pr_weather_html .ico_wl.DB02_N, .fcst_table .ico_wl.DB02_N {
+    background-position: 0 -180px
+}
+/* 구름많음 */
+#pr_weather_html .ico_wl.DB03, .fcst_table .ico_wl.DB03 {
+    background-position: 0 -240px
+}
+/* 구름많음 밤 */
+#pr_weather_html .ico_wl.DB03_N, .fcst_table .ico_wl.DB03_N {
+    background-position: 0 -300px
+}
+/* 흐림 */
+#pr_weather_html .ico_wl.DB04, #pr_weather_html .ico_wl.DB04_N, .fcst_table .ico_wl.DB04, .fcst_table .ico_wl.DB04_N {
+    background-position: 0 -360px
+}
+/* 소나기 */
+#pr_weather_html .ico_wl.ico_w07, .fcst_table .ico_wl.ico_w07 {
+    background-position: 0 -420px
+}
+/* 비 */
+#pr_weather_html .ico_wl.DB05, #pr_weather_html .ico_wl.DB05_N, .fcst_table .ico_wl.DB05, .fcst_table .ico_wl.DB05_N {
+    background-position: 0 -480px
+}
+/* 한때 비 */
+#pr_weather_html .ico_wl.ico_w09, .fcst_table .ico_wl.ico_w09 {
+    background-position: 0 -540px
+}
+/* 눈 */
+#pr_weather_html .ico_wl.DB08, #pr_weather_html .ico_wl.DB08_N, .fcst_table .ico_wl.DB08, .fcst_table .ico_wl.DB08_N {
+    background-position: 0 -600px
+}
+/* 한때 눈 */
+#pr_weather_html .ico_wl.ico_w11, .fcst_table .ico_wl.ico_w11 {
+    background-position: 0 -660px
+}
+/* 비/눈 */
+#pr_weather_html .ico_wl.DB06, #pr_weather_html .ico_wl.DB06_N, .fcst_table .ico_wl.DB06, .fcst_table .ico_wl.DB06_N {
+    background-position: 0 -720px
+}
+/* 한때 비/눈 */
+#pr_weather_html .ico_wl.ico_w13, .fcst_table .ico_wl.ico_w13 {
+    background-position: 0 -780px
+}
+/* 눈/비 */
+#pr_weather_html .ico_wl.DB07, #pr_weather_html .ico_wl.DB07_N, .fcst_table .ico_wl.DB07, .fcst_table .ico_wl.DB07_N {
+    background-position: 0 -840px
+}
+/* 한때 눈/비 */
+#pr_weather_html .ico_wl.ico_w15, .fcst_table .ico_wl.ico_w15 {
+    background-position: 0 -900px
+}
+/* 천둥번개 */
+#pr_weather_html .ico_wl.ico_w16, .fcst_table .ico_wl.ico_w16 {
+    background-position: 0 -960px
+}
+/* 연무 */
+#pr_weather_html .ico_wl.ico_w17, .fcst_table .ico_wl.ico_w17 {
+    background-position: 0 -1020px
+}
+/* 안개 */
+#pr_weather_html .ico_wl.ico_w18, .fcst_table .ico_wl.ico_w18 {
+    background-position: 0 -1080px
+}
+/* 박무 */
+#pr_weather_html .ico_wl.ico_w19, .fcst_table .ico_wl.ico_w19 {
+    background-position: 0 -1140px
+}
+/* 황사 */
+#pr_weather_html .ico_wl.ico_w20, .fcst_table .ico_wl.ico_w20 {
+    background-position: 0 -1200px
+}
+
+
+
+.w_loader {
+  height: 3px;
+  width: 100%;
+  overflow: hidden;
+}
+.w_loader:before{
+  display: block;
+  position: absolute;
+  content: "";
+  left: -200px;
+  width: 200px;
+  height: 3px;
+  background-color: #ddd;
+  animation: loading 2s linear infinite;
+}
+@keyframes loading {
+    from {left: -200px; width: 30%;}
+    50% {width: 30%;}
+    70% {width: 70%;}
+    80% { left: 50%;}
+    95% {left: 120%;}
+    to {left: 100%;}
+}
+
+
+.fcst_table {
+	position: relative;
+    clear: both;
+    width: 657px;
+    height: 401px;
+}
+.fcst_table em {
+	font-style: normal;
+}
+.fcst_table ul{
+	margin: 0;
+    padding: 0;
+}
+.fcst_table li{
+	list-style: none;
+}
+
+.fcst_table .fcst_title {
+    float: left;
+    width: 40px;
+    border: 1px solid #dcdde0;
+    border-bottom: 0;
+    color: #555;
+    text-align: center;
+}
+.fcst_table .fcst_title li {
+    border-bottom: 1px solid #dcdde0;
+    line-height: 14px;
+}
+.fcst_table .fcst_title li em {
+    font-family: tahoma;
+    font-size: 11px;
+    color: #b6b6b6;
+	font-style: normal;
+}
+.fcst_table .h_date, .fcst_table .h_time {
+    height: 20px;
+    padding-top: 9px;
+}
+.fcst_table .h_weather {
+    height: 26px;
+    padding-top: 13px;
+}
+.fcst_table .h_temp {
+    height: 73px;
+    padding-top: 45px;
+}
+.fcst_table .h_rain {
+    height: 50px;
+    padding-top: 12px;
+}
+.fcst_table .h_wind {
+    height: 39px;
+    padding-top: 15px;
+}
+.fcst_table .h_humid {
+    height: 47px;
+    padding-top: 15px;
+}
+
+.fcst_table .fcst_container .info_area {
+    float: left;
+    overflow: hidden;
+}
+
+.fcst_table .fcst_container .tit {
+    background: #fcfcfc;
+}
+.fcst_table .fcst_container .h_date {
+    display: block;
+    border-top: 1px solid #dcdde0;
+    border-right: 1px solid #dcdde0;
+    font-size: 12px;
+    line-height: 16px;
+    color: #333;
+    text-align: center;
+}
+.fcst_table .fcst_container .forecast_lst {
+    float: left;
+    border-top: 1px solid #dcdde0;
+    border-right: 1px solid #f2f2f2;
+}
+.fcst_table .fcst_container .forecast_lst li {
+    width: 40px;
+    border-bottom: 1px solid #dcdde0;
+    font-family: tahoma;
+    font-size: 12px;
+    line-height: 15px;
+    color: #5c5c5c;
+    text-align: center;
+}
+.fcst_table .fcst_container .h_weather .ico_ws  {
+    margin-top: -6px;
+}
+.fcst_table .fcst_container .h_wind .txt {
+    display: block;
+    clear: both;
+}
+.fcst_table .fcst_container .h_rain {
+    height: 47px;
+    padding-top: 15px;
+}
+.fcst_table .fcst_container .graph_bar {
+    display: block;
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+.fcst_table .fcst_container .graph_bar em {
+    display: inline-block;
+    position: absolute;
+    bottom: 0;
+    left: 18px;
+    width: 4px;
+    background: #bdc2c8;
+}
+.fcst_table .fcst_container .graph_bar em span {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    width: 24px;
+    margin-left: -12px;
+    text-align: center;
+}
+.fcst_table .fcst_container .h_wind img {
+    width: 14px;
+    height: 14px;
+    vertical-align: top;
+}
+.fcst_table .fcst_container .forecast_lst.last {
+    border-right: 1px solid #dcdde0;
+}
+
+.fcst_table .chart-container {
+	position: absolute;
+	top: 101px;
+    left: 51px;
+	height:120px; 
+	width:594px;
+}
+
+.pr_fcst_weather {
+	width: 100%;
+	overflow-x: auto;
+}

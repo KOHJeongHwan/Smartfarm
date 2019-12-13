@@ -1,0 +1,235 @@
+<!--%import("js/dfs_xy_conv.js")-->
+<!--%import("css/default.css")-->
+<!--@if($widget_info->colorset == 'dark')-->
+	<!--%import("css/dark.css")-->
+<!--@end-->
+
+<div class="widget_pr_weather">
+<!--@if($widget_info->is_act)-->
+	<div class="pr_dsp_weather">
+		<div id="pr_select_geo" class="pr_btn_geo {$widget_info->isgeo}"></div>
+		<div id="pr_weather_html">
+			<div class="cont_today">
+				<div class="info_temp">
+					<div class="info_weather">
+						<span class="wrap_desc">
+							<span id="ico_wl" class="ico_wl {$widget_info->data->weather->class}"></span>
+							<span class="desc_temp">
+								<span class="txt_weather">{$widget_info->data->weather->txt}</span>
+								<strong class="txt_temp">{$widget_info->data->weather->temp}<span class="txt_unit">℃</span></strong>
+							</span>
+						</span>
+					</div>
+					<!--@if($widget_info->data->weather->time)-->
+						<p class="txt_desc" data-msg="지역 변경" data-loc="{$widget_info->address.', '.$widget_info->data->weather->time.' 현재'}">{$widget_info->address.', '.$widget_info->data->weather->time.' 현재'}</p>
+					<!--@else-->
+						<p class="txt_desc" data-msg="지역 변경" data-loc="&nbsp;<span class='w_loader'></span>">&nbsp;<span class="w_loader"></span></p>
+					<!--@end-->
+					
+				</div>
+				<div class="info_another">
+					<dl class="dl_weather"> 
+						<dt>
+							<span class="ico_weather ico_type_wind"></span>
+							<span class="txt_tit">현재바람</span>
+						</dt> 
+						<dd class="wind_type0">{$widget_info->data->weather->wind}</dd> 
+					</dl> 
+					<dl class="dl_weather"> 
+						<dt>
+							<span class="ico_weather ico_type_humidity"></span>
+							<span class="txt_tit">현재습도</span>
+						</dt> 
+						<dd class="humidity_type0">{$widget_info->data->weather->humidity}</dd> 
+					</dl> 
+					<dl class="dl_weather"> 
+						<dt>
+							<span class="ico_weather ico_dust"></span>
+							<span class="txt_tit">통합대기</span>
+						</dt> 
+						<dd class="dust_type0" style="color:{$widget_info->data->aqi->bgcolor};">{$widget_info->data->aqi->level}</dd> 
+					</dl>
+					<dl class="aqi_detail" style="display:none;background-color:{$widget_info->data->aqi->bgcolor}; color:{$widget_info->data->aqi->color};">
+						<dt>
+							<span>미세먼지</span>{$widget_info->data->aqi->pm10} ㎍/㎥<br/><span>초미세먼지</span>{$widget_info->data->aqi->pm25} ㎍/㎥
+						</dt> 
+						<div class="data_provide"><span class="aqi_detail_time">{$widget_info->data->aqi->time} 현재, </span>제공 : <a href="http://aqicn.org/" target="_blank" style="color:{$widget_info->data->aqi->color};">World Air Quality</a></div>
+					</dl>
+				</div> 
+			</div>
+		</div>
+		<div class="data_provide">제공 : <a href="{$widget_info->kmaurl}" target="_blank">기상청 날씨누리</a></div>
+	</div>
+
+	<div class="pr_select_region" style="display:none;">
+		<div class="pr_select_control">
+			<i id="pr_select_pre" class="fa fa-arrow-left" aria-hidden="true"></i>
+			<span style="width:100%;">&nbsp;</span>
+			<i id="pr_select_close" class="fa fa-times" aria-hidden="true"></i>
+		</div>
+
+		<ul id="pr_region_list">
+			<!--주소록 출력 위치-->
+		</ul>
+		<div class="pr_spinner" style="display:none;">
+		  <div class="bounce1"></div>
+		  <div class="bounce2"></div>
+		  <div class="bounce3"></div>
+		</div>
+
+	</div>
+	
+<script>
+var val=0;
+
+jQuery(document).ready(function($) {
+
+	$('#pr_select_geo').on('click', function() {
+		$(this).addClass('act');
+
+		var geoSuccess = function(position) {
+			getWeather(JSON.stringify(dfs_xy_conv('toXY', position.coords.latitude, position.coords.longitude)));
+		};
+		var geoError = function(error) {
+			$('#pr_select_geo').removeClass('act');
+			selLocation();
+		};
+
+		if(navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(geoSuccess, geoError, {timeout: 5000});
+		} else {
+			$('#pr_select_geo').removeClass('act');
+			selLocation();
+		};
+	});
+
+	$('.txt_desc').on('mouseenter mouseleave click', function(e) {
+		if (e.type === 'mouseenter') {
+			$(this).html($(this).data('msg')).css('color', '#0092ff');
+		}
+		else if (e.type === 'mouseleave') {
+			$(this).html($(this).data('loc')).css('color', '');
+		}
+		else {
+			selLocation();
+		}
+	});
+
+	$('.dust_type0').on('click', function() {
+		$('.aqi_detail').slideToggle(400);
+	});
+
+	$('#pr_select_close').on('click', function() {
+		$('.pr_select_region').hide();
+		$('.pr_dsp_weather').fadeIn(1500);
+	});
+
+	$('#pr_select_pre').on('click', function() {
+		var rgncd = $(this).data('rgncd').toString();
+		getWeather(rgncd);
+		if(rgncd.length == 1) {
+			$('#pr_select_pre').hide();
+		} else if(rgncd.length == 2) {
+			$(this).data('rgncd', '0');
+		}
+	});
+
+	$('#pr_region_list').on('click', '.pr_rgn_item', function() {
+		var rgncd = $(this).data('rgncd').toString();
+		
+		if(rgncd.length == 2) {
+			$('#pr_select_pre').data('rgncd', '0');
+		} else if(rgncd.length == 5) {
+			$('#pr_select_pre').data('rgncd', rgncd.substring(0, 2));
+		} else if(rgncd.length == 8) {
+			$('#pr_select_pre').data('rgncd', rgncd.substring(0, 5));
+		}
+
+		$('#pr_select_pre').show();
+		getWeather(rgncd);
+	});
+
+	var selLocation = function() {
+		$('.pr_dsp_weather').hide();
+		$('#pr_select_pre').hide();
+		$('.pr_select_region').fadeIn('slow');
+		getWeather('0');
+	};
+
+	function getWeather(rgncd) {
+		$.ajax({
+			url: './widgets/pr_weather_v2/getWeather.php',
+			global: false,
+			type: 'POST',
+			dataType: 'json',
+			data: {
+				loc: rgncd
+			},
+			beforeSend: function() {
+				$('.pr_spinner').show();
+			},
+			success: function(result) {
+				$('.pr_spinner').hide();
+				
+				if(result && result.success) {
+					if(result.type == 'list') {
+						var rgnList = new Map();
+						var arrayObj = result.data.split('|');
+						arrayObj.forEach(function(obj) {
+							var arrayStr = obj.split(':');
+							rgnList.set(arrayStr[0], arrayStr[1]);
+						});
+						var html = '';
+						rgnList.forEach(function(val, idx) {
+							html += '<li class="pr_rgn_item" data-rgncd="'+idx+'">'+val+'</li>';
+						});
+						$('#pr_region_list').html(html);
+					} else if(result.type == 'html') {
+						if(result.isgeo) {
+							$('#pr_select_geo').removeClass('act').addClass('on');
+						} 
+						else {
+							$('#pr_select_geo').removeClass('on');
+						};
+
+						$('#ico_wl').removeClass().addClass('ico_wl').addClass(result.data.weather.class);
+						$('.txt_weather').html(result.data.weather.txt);
+						$('.txt_temp').html(result.data.weather.temp+'<span class="txt_unit">℃</span>');
+						$('.txt_desc').html(result.region+', '+result.data.weather.time+' 현재').data('loc', result.region+', '+result.data.weather.time+' 현재');						
+						$('.humidity_type0').html(result.data.weather.humidity);
+						$('.wind_type0').html(result.data.weather.wind);
+						$('.dust_type0').html(result.data.aqi.level).css('color', result.data.aqi.bgcolor);
+						$('.aqi_detail').css('background-color', result.data.aqi.bgcolor).css('color', result.data.aqi.color);
+						$('.aqi_detail .data_provide a').css('color', result.data.aqi.color);
+						$('.aqi_detail dt').html('<span>미세먼지</span>'+result.data.aqi.pm10+' ㎍/㎥<br/><span>초미세먼지</span>'+result.data.aqi.pm25+' ㎍/㎥');
+						$('.aqi_detail_time').html(result.data.aqi.time+' 현재, ');
+
+						$('.pr_select_region').hide();
+						$('.pr_dsp_weather').fadeIn(1500);
+						$('#pr_select_pre').data('rgncd', '0');
+					}
+				}
+				else {
+					$('#pr_select_geo').removeClass('act');
+					$('.txt_desc').html(result.emsg).data('loc', result.emsg);
+				}
+			},
+			error: function(result) {
+				$('#pr_select_geo').removeClass('act');
+				console.log(result.responseText);
+			},
+		});
+	}
+
+<!--@if($widget_info->trace)-->
+	$('#pr_select_geo').trigger('click');
+<!--@elseif($widget_info->req_load)-->
+	getWeather('Load');
+<!--@end-->
+
+});
+
+</script>
+<!--@end-->
+
+</div>
